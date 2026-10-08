@@ -1,4 +1,5 @@
 import os
+import os
 import secrets
 from flask import Flask, render_template, request, send_file, after_this_request
 import yt_dlp
@@ -26,6 +27,7 @@ def index():
             opciones = {
                 'format': 'bestaudio/best',
                 'outtmpl': os.path.join(CARPETA_DESCARGAS, f'{nombre_unico}.%(ext)s'),
+                'cookiefile': 'www.youtube.com_cookies.txt',  # Usa las cookies para autenticar ante YouTube
                 'postprocessors': [{
                     'key': 'FFmpegExtractAudio',
                     'preferredcodec': 'mp3',
@@ -37,6 +39,7 @@ def index():
             opciones = {
                 'format': 'bestvideo+bestaudio/best',
                 'merge_output_format': 'mp4',
+                'cookiefile': 'www.youtube.com_cookies.txt',  # Usa las cookies para autenticar ante YouTube
                 'outtmpl': os.path.join(CARPETA_DESCARGAS, f'{nombre_unico}.%(ext)s'),
             }
             extension_final = 'mp4'
@@ -76,9 +79,7 @@ def index():
 
     return render_template('index.html')
 
-# --- MODIFICACIÓN FINAL PARA COMPARTIR EN INTERNET ---
 if __name__ == '__main__':
     # Esto permite que plataformas como Render asignen el puerto dinámicamente.
-    # Si no detecta un puerto del servidor de internet, por defecto usa el 5000 local.
     puerto = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=puerto)
