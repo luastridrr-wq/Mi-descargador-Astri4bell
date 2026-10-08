@@ -7,7 +7,7 @@ import yt_dlp
 
 app = Flask(__name__)
 
-# Carpeta temporal donde se procesarán las descargas
+# Carpeta temporal donde se procesarán las descargas en el servidor
 CARPETA_DESCARGAS = os.path.join(os.getcwd(), 'descargas_temporales')
 os.makedirs(CARPETA_DESCARGAS, exist_ok=True)
 
@@ -20,15 +20,15 @@ def index():
         if not url:
             return "Por favor, introduce una URL válida.", 400
 
-        # Generamos un nombre único temporal para evitar conflictos entre usuarios
+        # Generamos un nombre único temporal para evitar conflictos de archivos en el servidor
         nombre_unico = secrets.token_hex(8)
         
-        # Configuración base de yt-dlp según la elección del usuario
+        # CONFIGURACIÓN DEFINITIVA Y ROBUSTA PARA EVITAR ERRORES DE FORMATO
         if formato == 'mp3':
             opciones = {
                 'format': 'bestaudio/best',
                 'outtmpl': os.path.join(CARPETA_DESCARGAS, f'{nombre_unico}.%(ext)s'),
-                'cookiefile': 'www.youtube.com_cookies.txt',
+                'cookiefile': 'www.youtube.com_cookies.txt',  # Autenticación con cookies contra bloqueos
                 'postprocessors': [{
                     'key': 'FFmpegExtractAudio',
                     'preferredcodec': 'mp3',
@@ -36,28 +36,30 @@ def index():
                 }],
             }
             extension_final = 'mp3'
-        else: # MP4 por defecto (REGLA FLEXIBLE INCLUIDA AQUÍ)
+        else:  # CONFIGURACIÓN MP4 UNIVERSAL
             opciones = {
-                'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
-                'cookiefile': 'www.youtube.com_cookies.txt',
+                # Descarga la máxima calidad absoluta de video y audio que tenga YouTube, sin importar su formato de origen
+                'format': 'bestvideo+bestaudio/best',
+                'cookiefile': 'www.youtube.com_cookies.txt',  # Autenticación con cookies contra bloqueos
+                # Fuerza a FFmpeg a fusionar y re-codificar los flujos directamente a un contenedor MP4 compatible
                 'merge_output_format': 'mp4',
                 'outtmpl': os.path.join(CARPETA_DESCARGAS, f'{nombre_unico}.%(ext)s'),
             }
             extension_final = 'mp4'
 
         try:
-            # Descarga del archivo en el servidor
+            # Descarga y procesamiento del archivo en el servidor
             with yt_dlp.YoutubeDL(opciones) as ydl:
                 info = ydl.extract_info(url, download=True)
-                # Obtenemos el título original del video para el usuario
+                # Obtenemos el título original del video
                 titulo_video = info.get('title', 'video_descargado')
-                # Limpiamos caracteres raros del título para evitar errores de descarga
+                # Limpiamos caracteres extraños del título para que no rompa el sistema de descargas
                 titulo_limpio = "".join(c for c in titulo_video if c.isalnum() or c in (' ', '_', '-')).strip()
 
             archivo_servidor = os.path.join(CARPETA_DESCARGAS, f'{nombre_unico}.{extension_final}')
             nombre_descarga_usuario = f'{titulo_limpio}.{extension_final}'
 
-            # Función para borrar el archivo del servidor INMEDIATAMENTE después de enviarlo
+            # Función de seguridad para borrar el archivo del servidor INMEDIATAMENTE después de enviarlo al usuario
             @after_this_request
             def eliminar_archivo_temporal(response):
                 try:
@@ -67,7 +69,7 @@ def index():
                     print(f"Error al eliminar archivo temporal: {e}")
                 return response
 
-            # Envía el archivo forzando la descarga directa para que no falle el MP4
+            # Envía el archivo forzando la descarga directa e ignorando la previsualización del navegador
             return send_file(
                 archivo_servidor, 
                 as_attachment=True, 
@@ -81,5 +83,6 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
+    # Configuración de puerto dinámica requerida por plataformas de hosting como Render
     puerto = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=puerto)
