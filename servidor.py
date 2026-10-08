@@ -1,5 +1,4 @@
 import os
-import os
 import secrets
 from flask import Flask, render_template, request, send_file, after_this_request
 import yt_dlp
@@ -27,7 +26,7 @@ def index():
             opciones = {
                 'format': 'bestaudio/best',
                 'outtmpl': os.path.join(CARPETA_DESCARGAS, f'{nombre_unico}.%(ext)s'),
-                'cookiefile': 'www.youtube.com_cookies.txt',  # Usa las cookies para autenticar ante YouTube
+                'cookiefile': 'www.youtube.com_cookies.txt',
                 'postprocessors': [{
                     'key': 'FFmpegExtractAudio',
                     'preferredcodec': 'mp3',
@@ -35,11 +34,11 @@ def index():
                 }],
             }
             extension_final = 'mp3'
-        else: # MP4 por defecto
+        else: # MP4 por defecto (REGLA FLEXIBLE INCLUIDA AQUÍ)
             opciones = {
-                'format': 'bestvideo+bestaudio/best',
+                'format': 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/best',
+                'cookiefile': 'www.youtube.com_cookies.txt',
                 'merge_output_format': 'mp4',
-                'cookiefile': 'www.youtube.com_cookies.txt',  # Usa las cookies para autenticar ante YouTube
                 'outtmpl': os.path.join(CARPETA_DESCARGAS, f'{nombre_unico}.%(ext)s'),
             }
             extension_final = 'mp4'
@@ -80,6 +79,5 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    # Esto permite que plataformas como Render asignen el puerto dinámicamente.
     puerto = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=puerto)
