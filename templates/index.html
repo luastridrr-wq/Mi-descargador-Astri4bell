@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Descargador Web Privado</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .contenedor {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 90%;
+            max-width: 500px;
+        }
+        h1 { color: #ff0000; margin-bottom: 20px; }
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 2px solid #333;
+            border-radius: 6px;
+            background-color: #2a2a2a;
+            color: #fff;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .opciones {
+            margin-bottom: 25px;
+        }
+        label {
+            margin: 0 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+            width: 100%;
+        }
+        button:hover { background-color: #cc0000; }
+        .nota { color: #888; font-size: 12px; margin-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="contenedor">
+    <h1>🚀 Mi Convertidor Multimedia</h1>
+    <p>Descarga videos de YouTube de forma privada y sin anuncios</p>
+    
+    <form method="POST">
+        <input type="text" name="url" placeholder="Pega el enlace de YouTube aquí..." required>
+        
+        <div class="opciones">
+            <label>
+                <input type="radio" name="formato" value="mp4" checked> 🎬 Video (MP4)
+            </label>
+            <label>
+                <input type="radio" name="formato" value="mp3"> 🎵 Audio (MP3 nativo)
+            </label>
+        </div>
+        
+        <button type="submit">Comenzar Descarga</button>
+    </form>
+    
+    <div class="nota">Los archivos se borran del servidor inmediatamente después de descargarse.</div>
+</div>
+
+</body>
+</html>
