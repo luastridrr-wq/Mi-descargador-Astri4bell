@@ -23,7 +23,7 @@ def index():
         # Generamos un nombre único temporal para evitar conflictos de archivos en el servidor
         nombre_unico = secrets.token_hex(8)
         
-        # CONFIGURACIÓN DEFINITIVA Y ROBUSTA PARA EVITAR ERRORES DE FORMATO
+        # CONFIGURACIÓN UNIVERSAL TOTALMENTE COMPATIBLE (SOLUCIÓN SABR ERRORS)
         if formato == 'mp3':
             opciones = {
                 'format': 'bestaudio/best',
@@ -36,12 +36,12 @@ def index():
                 }],
             }
             extension_final = 'mp3'
-        else:  # CONFIGURACIÓN MP4 UNIVERSAL
+        else:  # CONFIGURACIÓN MP4 UNIVERSAL BASADA EN COMPATIBILIDAD DE CÓDECS NATIVOS
             opciones = {
-                # Descarga la máxima calidad absoluta de video y audio que tenga YouTube, sin importar su formato de origen
-                'format': 'bestvideo+bestaudio/best',
+                # Esta línea es mágica: le dice a YouTube que ordene los formatos dando prioridad estricta 
+                # a los codecs universales H264 de video y AAC de audio, esquivando los bloqueos automáticos.
+                'format': 'bestvideo[vcodec^=avc1]+bestaudio[acodec^=mp4a]/best[ext=mp4]/best',
                 'cookiefile': 'www.youtube.com_cookies.txt',  # Autenticación con cookies contra bloqueos
-                # Fuerza a FFmpeg a fusionar y re-codificar los flujos directamente a un contenedor MP4 compatible
                 'merge_output_format': 'mp4',
                 'outtmpl': os.path.join(CARPETA_DESCARGAS, f'{nombre_unico}.%(ext)s'),
             }
